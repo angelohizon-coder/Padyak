@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'input_page.dart';
-import 'result_page.dart';
-import 'route_page.dart';
+import 'pages/input_page.dart';
+import 'pages/result_page.dart';
+import 'pages/profile_page.dart';
+import 'pages/weather_page.dart';
+import 'pages/map_page.dart';
 
 void main() {
   runApp(
@@ -9,11 +11,13 @@ void main() {
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFEDEDED),
       ),
-      initialRoute: '/input_page',
+      initialRoute: '/result_page',
       routes: {
         '/input_page': (context) => const InputPage(),
+        '/map_page': (context) => const MapPage(),
+        '/profile_page': (context) => const ProfilePage(),
         '/result_page': (context) => const ResultPage(),
-        '/route_page': (context) => const RoutePage()
+        '/weather_page': (context) => const WeatherPage()
       },
     ),
   );
