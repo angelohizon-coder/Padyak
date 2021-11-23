@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
+import 'package:intl/intl.dart';
+import 'package:padyak/services/weather.dart';
 
 class InputPage extends StatefulWidget {
   const InputPage({Key? key}) : super(key: key);
@@ -209,7 +211,7 @@ class _InputPageState extends State<InputPage> {
                       width: 50,
                       child: TextButton(
                         style: noSplashEffect,
-                        onPressed: () {
+                        onPressed: () async {
                           Navigator.pushNamed(context, '/weather_page');
                         },
                         child: Image.asset(
