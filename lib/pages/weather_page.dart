@@ -8,7 +8,14 @@ import 'package:flutter/widgets.dart';
 import 'package:padyak/services/weather.dart';
 
 class WeatherPage extends StatefulWidget {
-  const WeatherPage({Key? key}) : super(key: key);
+  const WeatherPage({
+    Key? key,
+    // required this.weatherData,
+    // required this.forecastData
+  }) : super(key: key);
+  // static const routeName = '/weather_page';
+  // final dynamic weatherData;
+  // final dynamic forecastData;
 
   @override
   _WeatherPageState createState() => _WeatherPageState();
@@ -16,33 +23,35 @@ class WeatherPage extends StatefulWidget {
 
 class _WeatherPageState extends State<WeatherPage> {
   WeatherModel weather = WeatherModel();
-  String typedName = '';
-  String cityName = '';
   String weekDay = '';
   String currentDate = '';
   String month = '';
   int day = 0;
+  String cityName = '';
   int temperature = 0;
+  String condition = '';
   List threeHourTemp = List.filled(9, null, growable: false);
-  List condition = List.filled(9, null, growable: false);
+  List threeHourCond = List.filled(9, null, growable: false);
 
   @override
   void initState() {
     super.initState();
-    updateUI(widget.key);
+    updateUI(widget.key, widget.key);
   }
 
-  void updateUI(dynamic weatherData) {
+  void updateUI(dynamic forecastData, dynamic weatherData) {
     setState(() {
-      if (weatherData == null) {
+      if (forecastData == null || weatherData == null) {
+        cityName = '';
         temperature = 0;
+        condition = 'cloudy.png';
         for (int i = 0; i < 9; i++)
         {
           threeHourTemp[i] = 0;
         }
         for (int i = 0; i < 9; i++)
         {
-         condition[i] = 'cloudy.png';
+          threeHourCond[i] = 'cloudy.png';
         }
         return;
       }
@@ -76,24 +85,119 @@ class _WeatherPageState extends State<WeatherPage> {
       };
       weekDay = weekList[weekDate].toString();
       month = monthList[monthDate].toString();
+      cityName = weatherData['name'];
+      temperature = weatherData['main']['temp'].toInt();
+      condition = weather.getWeatherImage(weatherData['weather'][0]['main']);
 
-      temperature = weatherData['list'][0]['main']['temp'].toInt();
-      cityName = weatherData['city']['name'];
-
-      for (int i = 0; i < 9; i++)
+      for (int i = 0; i < 8; i++)
       {
-        threeHourTemp[i] = weatherData['list'][i]['main']['temp'].toInt();
+        threeHourTemp[i] = forecastData['list'][i]['main']['temp'].toInt();
       }
-
-      for (int i = 0; i < 9; i++)
+      for (int i = 0; i < 8; i++)
       {
-        condition[i] = weather.getWeatherImage(weatherData['list'][i]['weather'][0]['main']);
+        threeHourCond[i] = weather.getWeatherImage(forecastData['list'][i]['weather'][0]['main']);
       }
     });
   }
 
+  Row threeHourWeather(int temp, String cond, String time) {
+    return Row(
+      mainAxisAlignment:
+      MainAxisAlignment.spaceAround,
+      children: [
+        Expanded(
+          child: Row(
+            crossAxisAlignment:
+            CrossAxisAlignment.start,
+            children: [
+              Text(
+                '$temp',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const Text(
+                '°C',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                time,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Image.asset(
+                'images/weather/$cond',
+                height: 50,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    /*dynamic weatherData = widget.weatherData;
+    dynamic forecastData = widget.forecastData;
+
+    DateTime now = DateTime.now();
+    int monthDate = now.month;
+    int weekDate = now.weekday;
+    day = now.day;
+    var weekList = {
+      1:'Mon',
+      2:'Tue',
+      3:'Wed',
+      4:'Thu',
+      5:'Fri',
+      6:'Sat',
+      7:'Sun'
+    };
+    var monthList = {
+      1:'Jan',
+      2:'Feb',
+      3:'Mar',
+      4:'Apr',
+      5:'May',
+      6:'Jun',
+      7:'Jul',
+      8:'Aug',
+      9:'Sep',
+      10:'Oct',
+      11:'Nov',
+      12:'Dec'
+    };
+    weekDay = weekList[weekDate].toString();
+    month = monthList[monthDate].toString();
+    cityName = weatherData['name'];
+    temperature = weatherData['main']['temp'].toInt();
+    condition = weather.getWeatherImage(weatherData['weather'][0]['main']);
+
+    for (int i = 0; i < 9; i++)
+    {
+      threeHourTemp[i] = forecastData['list'][i]['main']['temp'].toInt();
+    }
+    for (int i = 0; i < 9; i++)
+    {
+      threeHourCond[i] = weather.getWeatherImage(forecastData['list'][i]['weather'][0]['main']);
+    }*/
+
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
@@ -175,7 +279,7 @@ class _WeatherPageState extends State<WeatherPage> {
                                     ],
                                   ),
                                   Image.asset(
-                                    'images/weather/${condition[0]}',
+                                    'images/weather/$condition',
                                     height: 100,
                                     fit: BoxFit.fitWidth,
                                   )
@@ -187,7 +291,7 @@ class _WeatherPageState extends State<WeatherPage> {
                                   const SizedBox(
                                     width: 10,
                                   ),
-                                  Text(typedName),
+                                  Text(cityName),
                                 ],
                               )
                             ],
@@ -219,9 +323,9 @@ class _WeatherPageState extends State<WeatherPage> {
                     ),
                   ),
                   onPressed: () async {
-                    typedName = 'London';
-                    var weatherData = await weather.getCityWeather(typedName);
-                    updateUI(weatherData);
+                    var forecastData = await weather.getLocationForecast();
+                    var weatherData = await weather.getLocationWeather();
+                    updateUI(forecastData, weatherData);
                   },
                   child: Text(
                     'Get Weather Forecast',
@@ -280,54 +384,7 @@ class _WeatherPageState extends State<WeatherPage> {
                           Container(
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${threeHourTemp[0]}',
-                                          style: const TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const Text(
-                                          '°C',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        const Text(
-                                          '12 AM',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Image.asset(
-                                          'images/weather/${condition[0]}',
-                                          height: 50,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              child: threeHourWeather(threeHourTemp[0], threeHourCond[0], '12 AM'),
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
@@ -340,54 +397,7 @@ class _WeatherPageState extends State<WeatherPage> {
                           Container(
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${threeHourTemp[1]}',
-                                          style: const TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const Text(
-                                          '°C',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        const Text(
-                                          '3 AM',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Image.asset(
-                                          'images/weather/${condition[1]}',
-                                          height: 50,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              child: threeHourWeather(threeHourTemp[1], threeHourCond[1], '3 AM'),
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
@@ -400,54 +410,7 @@ class _WeatherPageState extends State<WeatherPage> {
                           Container(
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${threeHourTemp[2]}',
-                                          style: const TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const Text(
-                                          '°C',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        const Text(
-                                          '9 AM',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Image.asset(
-                                          'images/weather/${condition[2]}',
-                                          height: 50,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              child: threeHourWeather(threeHourTemp[2], threeHourCond[2], '6 AM'),
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
@@ -460,54 +423,7 @@ class _WeatherPageState extends State<WeatherPage> {
                           Container(
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${threeHourTemp[3]}',
-                                          style: const TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const Text(
-                                          '°C',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        const Text(
-                                          '9 AM',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Image.asset(
-                                          'images/weather/${condition[3]}',
-                                          height: 50,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              child: threeHourWeather(threeHourTemp[3], threeHourCond[3], '9 AM'),
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
@@ -520,54 +436,7 @@ class _WeatherPageState extends State<WeatherPage> {
                           Container(
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${threeHourTemp[4]}',
-                                          style: const TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const Text(
-                                          '°C',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        const Text(
-                                          '10 AM',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Image.asset(
-                                          'images/weather/${condition[4]}',
-                                          height: 50,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              child: threeHourWeather(threeHourTemp[4], threeHourCond[4], '12 PM'),
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
@@ -580,54 +449,7 @@ class _WeatherPageState extends State<WeatherPage> {
                           Container(
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${threeHourTemp[5]}',
-                                          style: const TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const Text(
-                                          '°C',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        const Text(
-                                          '12 PM',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Image.asset(
-                                          'images/weather/${condition[5]}',
-                                          height: 50,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              child: threeHourWeather(threeHourTemp[5], threeHourCond[5], '3 PM'),
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
@@ -640,116 +462,28 @@ class _WeatherPageState extends State<WeatherPage> {
                           Container(
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${threeHourTemp[6]}',
-                                          style: const TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const Text(
-                                          '°C',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        const Text(
-                                          '3 PM',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Image.asset(
-                                          'images/weather/${condition[6]}',
-                                          height: 50,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              child: threeHourWeather(threeHourTemp[6], threeHourCond[6], '6 PM'),
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
                               color: const Color(0xFFEDEDED),
                             ),
                           ),
+                          const SizedBox(
+                            height: 10,
+                          ),
                           Container(
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceAround,
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${threeHourTemp[7]}',
-                                          style: const TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const Text(
-                                          '°C',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        const Text(
-                                          '6 PM',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Image.asset(
-                                          'images/weather/${condition[7]}',
-                                          height: 50,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              child: threeHourWeather(threeHourTemp[7], threeHourCond[7], '9 PM'),
                             ),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(16),
                               color: const Color(0xFFEDEDED),
                             ),
+                          ),
+                          const SizedBox(
+                            height: 10,
                           ),
                           Container(
                             child: Padding(
@@ -794,7 +528,7 @@ class _WeatherPageState extends State<WeatherPage> {
                                           width: 10,
                                         ),
                                         Image.asset(
-                                          'images/weather/${condition[8]}',
+                                          'images/weather/${threeHourCond[8]}',
                                           height: 50,
                                         ),
                                       ],
@@ -807,6 +541,9 @@ class _WeatherPageState extends State<WeatherPage> {
                               borderRadius: BorderRadius.circular(16),
                               color: const Color(0xFFEDEDED),
                             ),
+                          ),
+                          const SizedBox(
+                            height: 10,
                           ),
                         ],
                       ),
@@ -884,3 +621,5 @@ class _WeatherPageState extends State<WeatherPage> {
     );
   }
 }
+
+
