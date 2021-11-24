@@ -6,7 +6,7 @@ import 'pages/weather_page.dart';
 import 'pages/map_page.dart';
 
 void main() {
-  runApp(
+    runApp(
     MaterialApp(
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFEDEDED),
@@ -20,5 +20,6 @@ void main() {
         '/weather_page': (context) => const WeatherPage()
       },
     ),
+
   );
 }
