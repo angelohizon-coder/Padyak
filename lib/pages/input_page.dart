@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
@@ -28,11 +29,11 @@ class _InputPageState extends State<InputPage> {
                     'images/greetings.png',
                     height: 48,
                   ),
-                  title: Text(
-                    'Hey backstreet boys!',
+                  title: AutoSizeText(
+                    'Hey there!',
                     style: labelInputPage,
                   ),
-                  subtitle: const Text(
+                  subtitle: const AutoSizeText(
                     'Where are you going today?',
                     style: TextStyle(
                       color: Colors.black,
@@ -131,8 +132,8 @@ class _InputPageState extends State<InputPage> {
                         ),
                       ),
                       SizedBox(
-                        height: 50,
-                        width: 300,
+                        height: MediaQuery.of(context).size.width * 0.1,
+                        width: double.infinity,
                         child: TextButton(
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(
@@ -148,7 +149,7 @@ class _InputPageState extends State<InputPage> {
                           onPressed: () {
                             Navigator.pushNamed(context, '/map_page');
                           },
-                          child: Text(
+                          child: AutoSizeText(
                             'Get The Route',
                             style: blueStyleIconButton,
                           ),
@@ -224,14 +225,14 @@ class _InputPageState extends State<InputPage> {
                       child: TextButton(
                         style: noSplashEffect,
                         onPressed: () {
-                          Navigator.pushNamed(context, '/profile_page');
+                          Navigator.pushNamed(context, '/proximity_page');
                         },
                         child: Image.asset(
-                          'images/menu/user.png',
+                          'images/menu/radar.png',
                           color: const Color(0xFFC4C4C4),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

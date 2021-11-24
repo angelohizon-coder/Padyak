@@ -42,7 +42,9 @@ class _MapPageState extends State<MapPage> {
         body: const SizedBox(
           width: double.infinity,
           height: double.infinity,
-          child: Center(child: Text('Map Goes Here')),
+          child: Center(
+            child: Text('Map Goes Here'),
+          ),
         ),
         panelBuilder: (controller) => PanelWidget(
           controller: controller,
