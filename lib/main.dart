@@ -17,9 +17,9 @@ void main() {
         '/map_page': (context) => const MapPage(),
         '/profile_page': (context) => const ProfilePage(),
         '/result_page': (context) => const ResultPage(),
-        '/weather_page': (context) => const WeatherPage()
+        'weather_page': (context) => const WeatherPage()
+        // WeatherPage.routeName: (context) => const WeatherPage(weatherData: null, forecastData: null)
       },
     ),
-
   );
 }

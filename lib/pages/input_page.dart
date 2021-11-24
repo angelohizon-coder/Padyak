@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:padyak/pages/weather_page.dart';
 import '../constants.dart';
 import 'package:intl/intl.dart';
+import 'package:padyak/services/weather.dart';
+import 'package:padyak/services/location.dart';
 import 'package:padyak/services/weather.dart';
 
 class InputPage extends StatefulWidget {
@@ -12,6 +15,20 @@ class InputPage extends StatefulWidget {
 }
 
 class _InputPageState extends State<InputPage> {
+  WeatherModel weather = WeatherModel();
+  /*double latitude = 0.0;
+  double longitude = 0.0;
+
+  void updateUI(dynamic weatherData) {
+    setState(() {
+      if (weatherData == null) {
+        return;
+      }
+      latitude = weatherData['city']['name'];
+      longitude = weatherData['city']['country'];
+    });
+  }*/
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -212,7 +229,14 @@ class _InputPageState extends State<InputPage> {
                       child: TextButton(
                         style: noSplashEffect,
                         onPressed: () async {
-                          Navigator.pushNamed(context, '/weather_page');
+                          // dynamic weatherData = await weather.getLocationWeather();
+                          // dynamic forecastData = await weather.getLocationWeather();
+                          Navigator.pushNamed(
+                            context,
+                            'weather_page'
+                            // arguments: WeatherPage(weatherData: weatherData, forecastData: forecastData)
+                          );
+                          // updateUI(forecastData, weatherData)
                         },
                         child: Image.asset(
                           'images/menu/cloud-cut-version.png',
