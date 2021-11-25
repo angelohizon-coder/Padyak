@@ -3,12 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../constants.dart';
+import 'package:padyak/services/networking.dart';
+import 'package:padyak/pages/map_page.dart';
 
 class InputPage extends StatefulWidget {
   InputPage({required this.currentLocation});
 
   final LatLng currentLocation;
-
 
   @override
   _InputPageState createState() => _InputPageState();
@@ -23,8 +24,16 @@ class _InputPageState extends State<InputPage> {
 
   Marker? _currentLocMarker;
 
+  // Properties for storing the origin and destination.
+  String origin = "";
+  String destination = "";
+
+  // Holds the string queries. This is seperated since queries require a specific format.
+  String originQuery = "";
+  String destinationQuery = "";
+
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _initialCamPos = CameraPosition(target: widget.currentLocation, zoom: 19);
     lat = widget.currentLocation.latitude;
@@ -33,16 +42,42 @@ class _InputPageState extends State<InputPage> {
       markerId: MarkerId('current_location'),
       infoWindow: const InfoWindow(title: 'Your Location'),
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
-      position: LatLng(lat!,long!),
+      position: LatLng(lat!, long!),
     );
   }
+
   //List<Marker> markerList = someMethod;
   @override
-  void dispose(){
+  void dispose() {
     _controller.dispose();
     super.dispose();
   }
-  
+
+  // Returns the the data for each location.
+  void processLocationData(String originQuery, String destinationQuery) async {
+    NetworkHelper nhOrigin = NetworkHelper(
+        'https://api.tomtom.com/search/2/poiSearch/$originQuery.json?typeahead=true&limit=5&countrySet=PH&key=$kTomApiKey');
+    var originData = await nhOrigin.getData();
+
+    NetworkHelper nhDestination = NetworkHelper(
+        'https://api.tomtom.com/search/2/poiSearch/$destinationQuery.json?typeahead=true&limit=5&countrySet=PH&key=$kTomApiKey');
+
+    var destinationData = await nhDestination.getData();
+
+    // Debugging purposes.
+    print(originData['results'][0]['position']);
+    print(destinationData['results'][0]['position']);
+
+    //  Proceed to /map_page carrying this data.
+    // Navigator.pushNamed(context, '/map_page');
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return MapPage(
+        originData: originData,
+        destinationData: destinationData,
+      );
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,8 +133,13 @@ class _InputPageState extends State<InputPage> {
                                 subtitle: Container(
                                   padding:
                                       const EdgeInsets.fromLTRB(0, 0, 60, 0),
-                                  child: const TextField(
-                                    decoration: InputDecoration(
+                                  child: TextField(
+                                    onChanged: (text) => setState(() {
+                                      origin = text;
+                                      print(
+                                          text); // Would print the origin input. For debugging.
+                                    }),
+                                    decoration: const InputDecoration(
                                       border: InputBorder.none,
                                       hintStyle: TextStyle(
                                         color: Colors.black,
@@ -108,7 +148,7 @@ class _InputPageState extends State<InputPage> {
                                       ),
                                       hintText: 'Your current location',
                                     ),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.black,
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -137,8 +177,13 @@ class _InputPageState extends State<InputPage> {
                                 subtitle: Container(
                                   padding:
                                       const EdgeInsets.fromLTRB(0, 0, 60, 0),
-                                  child: const TextField(
-                                    decoration: InputDecoration(
+                                  child: TextField(
+                                    onChanged: (text) => setState(() {
+                                      destination = text;
+                                      print(
+                                          text); // Would print the destination input. For debugging.
+                                    }),
+                                    decoration: const InputDecoration(
                                       border: InputBorder.none,
                                       hintStyle: TextStyle(
                                         color: Colors.black,
@@ -147,7 +192,7 @@ class _InputPageState extends State<InputPage> {
                                       ),
                                       hintText: 'Your desired location',
                                     ),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.black,
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -179,7 +224,14 @@ class _InputPageState extends State<InputPage> {
                             ),
                           ),
                           onPressed: () {
-                            Navigator.pushNamed(context, '/map_page');
+                            // Changes the format of the string and destination input.
+                            originQuery =
+                                origin.replaceAll(RegExp(' +'), '%20');
+                            destinationQuery =
+                                destination.replaceAll(RegExp(' +'), '%20');
+
+                            // Processes location data
+                            processLocationData(originQuery, destinationQuery);
                           },
                           child: AutoSizeText(
                             'Get The Route',
@@ -209,13 +261,14 @@ class _InputPageState extends State<InputPage> {
                         alignment: AlignmentDirectional.bottomEnd,
                         children: [
                           GoogleMap(
-                              myLocationButtonEnabled: false,
-                              zoomControlsEnabled: false,
-                              initialCameraPosition: _initialCamPos,
-                              onMapCreated: (controller) => _controller = controller,
-                              markers: {
-                                if(_currentLocMarker != null)_currentLocMarker!
-                              },
+                            myLocationButtonEnabled: false,
+                            zoomControlsEnabled: false,
+                            initialCameraPosition: _initialCamPos,
+                            onMapCreated: (controller) =>
+                                _controller = controller,
+                            markers: {
+                              if (_currentLocMarker != null) _currentLocMarker!
+                            },
                           ),
                           Positioned(
                             right: 5,
@@ -225,7 +278,8 @@ class _InputPageState extends State<InputPage> {
                               foregroundColor: Colors.white,
                               onPressed: () {
                                 _controller.animateCamera(
-                                  CameraUpdate.newCameraPosition(_initialCamPos),
+                                  CameraUpdate.newCameraPosition(
+                                      _initialCamPos),
                                 );
                               },
                               child: const Icon(Icons.center_focus_strong),
