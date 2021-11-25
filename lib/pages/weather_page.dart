@@ -564,7 +564,7 @@ class _WeatherPageState extends State<WeatherPage> {
                           splashFactory: NoSplash.splashFactory,
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, '/input_page');
+                          Navigator.pushNamed(context, '/loading_page');
                         },
                         child: Image.asset(
                           'images/menu/home.png',

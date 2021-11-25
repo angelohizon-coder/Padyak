@@ -4,6 +4,7 @@ import 'pages/result_page.dart';
 import 'pages/weather_page.dart';
 import 'pages/map_page.dart';
 import 'pages/proximity_page.dart';
+import 'package:padyak/pages/loading_page.dart';
 
 void main() {
     runApp(
@@ -11,9 +12,9 @@ void main() {
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFEDEDED),
       ),
-      initialRoute: '/result_page',
+      initialRoute: '/loading_page',
       routes: {
-        '/input_page': (context) => const InputPage(),
+        '/loading_page':(context) => LoadingScreen(),
         '/proximity_page': (context) => const ProximityPage(),
         '/map_page': (context) => const MapPage(),
         '/result_page': (context) => const ResultPage(),

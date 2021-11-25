@@ -1,35 +1,48 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:padyak/pages/weather_page.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../constants.dart';
-import 'package:intl/intl.dart';
-import 'package:padyak/services/weather.dart';
-import 'package:padyak/services/location.dart';
-import 'package:padyak/services/weather.dart';
 
 class InputPage extends StatefulWidget {
-  const InputPage({Key? key}) : super(key: key);
+  InputPage({required this.currentLocation});
+
+  final LatLng currentLocation;
+
 
   @override
   _InputPageState createState() => _InputPageState();
 }
 
 class _InputPageState extends State<InputPage> {
-  WeatherModel weather = WeatherModel();
-  /*double latitude = 0.0;
-  double longitude = 0.0;
+  late GoogleMapController _controller;
+  var _initialCamPos;
 
-  void updateUI(dynamic weatherData) {
-    setState(() {
-      if (weatherData == null) {
-        return;
-      }
-      latitude = weatherData['city']['name'];
-      longitude = weatherData['city']['country'];
-    });
-  }*/
+  double? lat;
+  double? long;
 
+  Marker? _currentLocMarker;
+
+  @override
+  void initState(){
+    super.initState();
+    _initialCamPos = CameraPosition(target: widget.currentLocation, zoom: 19);
+    lat = widget.currentLocation.latitude;
+    long = widget.currentLocation.longitude;
+    _currentLocMarker = Marker(
+      markerId: MarkerId('current_location'),
+      infoWindow: const InfoWindow(title: 'Your Location'),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+      position: LatLng(lat!,long!),
+    );
+  }
+  //List<Marker> markerList = someMethod;
+  @override
+  void dispose(){
+    _controller.dispose();
+    super.dispose();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -192,7 +205,34 @@ class _InputPageState extends State<InputPage> {
                       ),
                     ),
                     Expanded(
-                      child: Image.asset('images/dummy-map.JPG'),
+                      child: Stack(
+                        alignment: AlignmentDirectional.bottomEnd,
+                        children: [
+                          GoogleMap(
+                              myLocationButtonEnabled: false,
+                              zoomControlsEnabled: false,
+                              initialCameraPosition: _initialCamPos,
+                              onMapCreated: (controller) => _controller = controller,
+                              markers: {
+                                if(_currentLocMarker != null)_currentLocMarker!
+                              },
+                          ),
+                          Positioned(
+                            right: 5,
+                            bottom: 5,
+                            child: FloatingActionButton(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              foregroundColor: Colors.white,
+                              onPressed: () {
+                                _controller.animateCamera(
+                                  CameraUpdate.newCameraPosition(_initialCamPos),
+                                );
+                              },
+                              child: const Icon(Icons.center_focus_strong),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -229,15 +269,8 @@ class _InputPageState extends State<InputPage> {
                       width: 50,
                       child: TextButton(
                         style: noSplashEffect,
-                        onPressed: () async {
-                          // dynamic weatherData = await weather.getLocationWeather();
-                          // dynamic forecastData = await weather.getLocationWeather();
-                          Navigator.pushNamed(
-                            context,
-                            'weather_page'
-                            // arguments: WeatherPage(weatherData: weatherData, forecastData: forecastData)
-                          );
-                          // updateUI(forecastData, weatherData)
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/weather_page');
                         },
                         child: Image.asset(
                           'images/menu/cloud-cut-version.png',
