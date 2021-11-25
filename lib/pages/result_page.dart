@@ -1,3 +1,5 @@
+import 'package:auto_size_text/auto_size_text.dart';
+
 import '../constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -172,7 +174,7 @@ class _ResultPageState extends State<ResultPage> {
               ),
               Expanded(
                 child: SizedBox(
-                  height: 50,
+                  height: MediaQuery.of(context).size.width * 0.1,
                   width: double.infinity,
                   child: TextButton(
                     style: ButtonStyle(
@@ -188,7 +190,7 @@ class _ResultPageState extends State<ResultPage> {
                     onPressed: () {
                       Navigator.pushNamed(context, '/input_page');
                     },
-                    child: Text(
+                    child: AutoSizeText(
                       'Exit',
                       style: blueStyleIconButton,
                     ),

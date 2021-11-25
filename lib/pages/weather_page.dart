@@ -599,14 +599,12 @@ class _WeatherPageState extends State<WeatherPage> {
                       height: 50,
                       width: 50,
                       child: TextButton(
-                        style: const ButtonStyle(
-                          splashFactory: NoSplash.splashFactory,
-                        ),
+                        style: noSplashEffect,
                         onPressed: () {
-                          Navigator.pushNamed(context, '/profile_page');
+                          Navigator.pushNamed(context, '/proximity_page');
                         },
                         child: Image.asset(
-                          'images/menu/user.png',
+                          'images/menu/radar.png',
                           color: const Color(0xFFC4C4C4),
                         ),
                       ),
