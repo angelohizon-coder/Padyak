@@ -1,16 +1,48 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../constants.dart';
 
 class InputPage extends StatefulWidget {
-  const InputPage({Key? key}) : super(key: key);
+  InputPage({required this.currentLocation});
+
+  final LatLng currentLocation;
+
 
   @override
   _InputPageState createState() => _InputPageState();
 }
 
 class _InputPageState extends State<InputPage> {
+  late GoogleMapController _controller;
+  var _initialCamPos;
+
+  double? lat;
+  double? long;
+
+  Marker? _currentLocMarker;
+
+  @override
+  void initState(){
+    super.initState();
+    _initialCamPos = CameraPosition(target: widget.currentLocation, zoom: 19);
+    lat = widget.currentLocation.latitude;
+    long = widget.currentLocation.longitude;
+    _currentLocMarker = Marker(
+      markerId: MarkerId('current_location'),
+      infoWindow: const InfoWindow(title: 'Your Location'),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+      position: LatLng(lat!,long!),
+    );
+  }
+  //List<Marker> markerList = someMethod;
+  @override
+  void dispose(){
+    _controller.dispose();
+    super.dispose();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -173,7 +205,34 @@ class _InputPageState extends State<InputPage> {
                       ),
                     ),
                     Expanded(
-                      child: Image.asset('images/dummy-map.JPG'),
+                      child: Stack(
+                        alignment: AlignmentDirectional.bottomEnd,
+                        children: [
+                          GoogleMap(
+                              myLocationButtonEnabled: false,
+                              zoomControlsEnabled: false,
+                              initialCameraPosition: _initialCamPos,
+                              onMapCreated: (controller) => _controller = controller,
+                              markers: {
+                                if(_currentLocMarker != null)_currentLocMarker!
+                              },
+                          ),
+                          Positioned(
+                            right: 5,
+                            bottom: 5,
+                            child: FloatingActionButton(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              foregroundColor: Colors.white,
+                              onPressed: () {
+                                _controller.animateCamera(
+                                  CameraUpdate.newCameraPosition(_initialCamPos),
+                                );
+                              },
+                              child: const Icon(Icons.center_focus_strong),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
