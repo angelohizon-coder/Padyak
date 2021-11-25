@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:padyak/pages/weather_page.dart';
 import '../constants.dart';
 import 'package:padyak/services/networking.dart';
 import 'package:padyak/pages/map_page.dart';
@@ -39,7 +40,7 @@ class _InputPageState extends State<InputPage> {
     lat = widget.currentLocation.latitude;
     long = widget.currentLocation.longitude;
     _currentLocMarker = Marker(
-      markerId: MarkerId('current_location'),
+      markerId: const MarkerId('current_location'),
       infoWindow: const InfoWindow(title: 'Your Location'),
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
       position: LatLng(lat!, long!),
@@ -178,11 +179,13 @@ class _InputPageState extends State<InputPage> {
                                   padding:
                                       const EdgeInsets.fromLTRB(0, 0, 60, 0),
                                   child: TextField(
-                                    onChanged: (text) => setState(() {
-                                      destination = text;
-                                      print(
-                                          text); // Would print the destination input. For debugging.
-                                    }),
+                                    onChanged: (text) => setState(
+                                      () {
+                                        destination = text;
+                                        print(
+                                            text); // Would print the destination input. For debugging.
+                                      },
+                                    ),
                                     decoration: const InputDecoration(
                                       border: InputBorder.none,
                                       hintStyle: TextStyle(
@@ -324,7 +327,14 @@ class _InputPageState extends State<InputPage> {
                       child: TextButton(
                         style: noSplashEffect,
                         onPressed: () {
-                          Navigator.pushNamed(context, 'weather_page');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return const WeatherPage();
+                              },
+                            ),
+                          );
                         },
                         child: Image.asset(
                           'images/menu/cloud-cut-version.png',

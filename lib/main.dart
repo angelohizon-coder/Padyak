@@ -6,7 +6,7 @@ import 'pages/proximity_page.dart';
 import 'package:padyak/pages/loading_page.dart';
 
 void main() {
-    runApp(
+  runApp(
     MaterialApp(
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFEDEDED),
@@ -18,7 +18,6 @@ void main() {
         '/map_page': (context) => MapPage(),
         '/result_page': (context) => const ResultPage(),
         'weather_page': (context) => const WeatherPage()
-        // WeatherPage.routeName: (context) => const WeatherPage(weatherData: null, forecastData: null)
       },
     ),
   );

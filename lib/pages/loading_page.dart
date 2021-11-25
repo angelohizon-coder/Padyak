@@ -4,7 +4,6 @@ import 'package:padyak/models/location_model.dart';
 
 import 'input_page.dart';
 
-
 class LoadingScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -18,14 +17,20 @@ class _LoadingScreenState extends State<LoadingScreen> {
     super.initState();
     getLocationData();
   }
+
   void getLocationData() async {
     var currentLocation = await LocationModel().getUserLocation();
 
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return InputPage(
-        currentLocation: currentLocation,
-      );
-    }));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return InputPage(
+            currentLocation: currentLocation,
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -33,11 +38,12 @@ class _LoadingScreenState extends State<LoadingScreen> {
     return Scaffold(
       body: Center(
         child: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage('https://abergeldie.com.au/wp-content/uploads/2015/12/ajax-loader-large.gif'),
-            ),
-          ),
+          // TEMPORARY SIMPLY TESTING FOR AESTHETICS
+          // decoration: const BoxDecoration(
+          //   image: DecorationImage(
+          //     image: NetworkImage('https://abergeldie.com.au/wp-content/uploads/2015/12/ajax-loader-large.gif'),
+          //   ),
+          // ),
           child: const SpinKitDoubleBounce(
             color: Colors.black12,
             size: 100.0,

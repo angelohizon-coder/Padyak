@@ -10,12 +10,7 @@ import 'package:padyak/services/weather.dart';
 class WeatherPage extends StatefulWidget {
   const WeatherPage({
     Key? key,
-    // required this.weatherData,
-    // required this.forecastData
   }) : super(key: key);
-  // static const routeName = '/weather_page';
-  // final dynamic weatherData;
-  // final dynamic forecastData;
 
   @override
   _WeatherPageState createState() => _WeatherPageState();
@@ -57,71 +52,70 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   void updateUI(dynamic forecastData, dynamic weatherData) {
-    setState(() {
-      if (forecastData == null || weatherData == null) {
-        cityName = '';
-        temperature = 0;
-        condition = 'cloudy.png';
-        for (int i = 0; i < 40; i++)
-        {
-          threeHourTemp[i] = 0;
+    setState(
+      () {
+        if (forecastData == null || weatherData == null) {
+          cityName = '';
+          temperature = 0;
+          condition = 'cloudy.png';
+          for (int i = 0; i < 40; i++) {
+            threeHourTemp[i] = 0;
+          }
+          for (int i = 0; i < 40; i++) {
+            threeHourCond[i] = 'cloudy.png';
+          }
+          return;
         }
-        for (int i = 0; i < 40; i++)
-        {
-          threeHourCond[i] = 'cloudy.png';
+
+        DateTime now = DateTime.now();
+        int monthDate = now.month;
+        int weekDate = now.weekday;
+        day = now.day;
+        var weekList = {
+          1: 'Mon',
+          2: 'Tue',
+          3: 'Wed',
+          4: 'Thu',
+          5: 'Fri',
+          6: 'Sat',
+          7: 'Sun',
+          8: 'Mon',
+          9: 'Tue',
+          10: 'Wed',
+          11: 'Thu'
+        };
+        var monthList = {
+          1: 'Jan',
+          2: 'Feb',
+          3: 'Mar',
+          4: 'Apr',
+          5: 'May',
+          6: 'Jun',
+          7: 'Jul',
+          8: 'Aug',
+          9: 'Sep',
+          10: 'Oct',
+          11: 'Nov',
+          12: 'Dec'
+        };
+        weekDay = weekList[weekDate].toString();
+        thirdWeekDay = weekList[weekDate + 2].toString();
+        fourthWeekDay = weekList[weekDate + 3].toString();
+        fifthWeekDay = weekList[weekDate + 4].toString();
+        month = monthList[monthDate].toString();
+        cityName = weatherData['name'];
+        temperature = weatherData['main']['temp'].toInt();
+        condition = weather.getWeatherImage(weatherData['weather'][0]['main']);
+
+        for (int i = 0; i < 40; i++) {
+          threeHourTemp[i] = forecastData['list'][i]['main']['temp'].toInt();
         }
-        return;
-      }
-
-      DateTime now = DateTime.now();
-      int monthDate = now.month;
-      int weekDate = now.weekday;
-      day = now.day;
-      var weekList = {
-        1:'Mon',
-        2:'Tue',
-        3:'Wed',
-        4:'Thu',
-        5:'Fri',
-        6:'Sat',
-        7:'Sun',
-        8:'Mon',
-        9:'Tue',
-        10:'Wed',
-        11:'Thu'
-      };
-      var monthList = {
-        1:'Jan',
-        2:'Feb',
-        3:'Mar',
-        4:'Apr',
-        5:'May',
-        6:'Jun',
-        7:'Jul',
-        8:'Aug',
-        9:'Sep',
-        10:'Oct',
-        11:'Nov',
-        12:'Dec'
-      };
-      weekDay = weekList[weekDate].toString();
-      thirdWeekDay = weekList[weekDate+2].toString();
-      fourthWeekDay = weekList[weekDate+3].toString();
-      fifthWeekDay = weekList[weekDate+4].toString();
-      month = monthList[monthDate].toString();
-      cityName = weatherData['name'];
-      temperature = weatherData['main']['temp'].toInt();
-      condition = weather.getWeatherImage(weatherData['weather'][0]['main']);
-
-      for (int i = 0; i < 40; i++)
-      {
-        threeHourTemp[i] = forecastData['list'][i]['main']['temp'].toInt();
-      }
-      for (int i = 0; i < 40; i++)
-      {
-        threeHourCond[i] = weather.getWeatherImage(forecastData['list'][i]['weather'][0]['main']);
-      }
-    });
+        for (int i = 0; i < 40; i++) {
+          threeHourCond[i] = weather
+              .getWeatherImage(forecastData['list'][i]['weather'][0]['main']);
+        }
+      },
+    );
   }
 
   SizedBox dayWeather(int i) {
@@ -134,7 +128,8 @@ class _WeatherPageState extends State<WeatherPage> {
           Container(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: threeHourWeather(threeHourTemp[i], threeHourCond[i], '12 AM'),
+              child:
+                  threeHourWeather(threeHourTemp[i], threeHourCond[i], '12 AM'),
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
@@ -147,7 +142,8 @@ class _WeatherPageState extends State<WeatherPage> {
           Container(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: threeHourWeather(threeHourTemp[i+1], threeHourCond[i+1], '3 AM'),
+              child: threeHourWeather(
+                  threeHourTemp[i + 1], threeHourCond[i + 1], '3 AM'),
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
@@ -160,7 +156,8 @@ class _WeatherPageState extends State<WeatherPage> {
           Container(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: threeHourWeather(threeHourTemp[i+2], threeHourCond[i+2], '6 AM'),
+              child: threeHourWeather(
+                  threeHourTemp[i + 2], threeHourCond[i + 2], '6 AM'),
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
@@ -173,7 +170,8 @@ class _WeatherPageState extends State<WeatherPage> {
           Container(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: threeHourWeather(threeHourTemp[i+3], threeHourCond[i+3], '9 AM'),
+              child: threeHourWeather(
+                  threeHourTemp[i + 3], threeHourCond[i + 3], '9 AM'),
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
@@ -186,7 +184,8 @@ class _WeatherPageState extends State<WeatherPage> {
           Container(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: threeHourWeather(threeHourTemp[i+4], threeHourCond[i+4], '12 PM'),
+              child: threeHourWeather(
+                  threeHourTemp[i + 4], threeHourCond[i + 4], '12 PM'),
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
@@ -199,7 +198,8 @@ class _WeatherPageState extends State<WeatherPage> {
           Container(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: threeHourWeather(threeHourTemp[i+5], threeHourCond[i+5], '3 PM'),
+              child: threeHourWeather(
+                  threeHourTemp[i + 5], threeHourCond[i + 5], '3 PM'),
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
@@ -212,7 +212,8 @@ class _WeatherPageState extends State<WeatherPage> {
           Container(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: threeHourWeather(threeHourTemp[i+6], threeHourCond[i+6], '6 PM'),
+              child: threeHourWeather(
+                  threeHourTemp[i + 6], threeHourCond[i + 6], '6 PM'),
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
@@ -225,7 +226,8 @@ class _WeatherPageState extends State<WeatherPage> {
           Container(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: threeHourWeather(threeHourTemp[i+7], threeHourCond[i+7], '9 PM'),
+              child: threeHourWeather(
+                  threeHourTemp[i + 7], threeHourCond[i + 7], '9 PM'),
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
@@ -235,66 +237,6 @@ class _WeatherPageState extends State<WeatherPage> {
           const SizedBox(
             height: 10,
           ),
-          // Container(
-          //   child: Padding(
-          //     padding: const EdgeInsets.all(16.0),
-          //     child: Row(
-          //       mainAxisAlignment:
-          //       MainAxisAlignment.spaceAround,
-          //       children: [
-          //         Expanded(
-          //           child: Row(
-          //             crossAxisAlignment:
-          //             CrossAxisAlignment.start,
-          //             children: [
-          //               Text(
-          //                 '${threeHourTemp[8]}',
-          //                 style: const TextStyle(
-          //                   fontSize: 22,
-          //                   fontWeight: FontWeight.w900,
-          //                 ),
-          //               ),
-          //               const Text(
-          //                 '°C',
-          //                 style: TextStyle(
-          //                   fontWeight: FontWeight.w900,
-          //                 ),
-          //               ),
-          //             ],
-          //           ),
-          //         ),
-          //         Expanded(
-          //           child: Row(
-          //             mainAxisAlignment: MainAxisAlignment.end,
-          //             children: [
-          //               const Text(
-          //                 '9 PM',
-          //                 style: TextStyle(
-          //                   fontSize: 20,
-          //                   fontWeight: FontWeight.w900,
-          //                 ),
-          //               ),
-          //               const SizedBox(
-          //                 width: 10,
-          //               ),
-          //               Image.asset(
-          //                 'images/weather/${threeHourCond[8]}',
-          //                 height: 50,
-          //               ),
-          //             ],
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          //   decoration: BoxDecoration(
-          //     borderRadius: BorderRadius.circular(16),
-          //     color: const Color(0xFFEDEDED),
-          //   ),
-          // ),
-          // const SizedBox(
-          //   height: 10,
-          // ),
         ],
       ),
     );
@@ -302,13 +244,11 @@ class _WeatherPageState extends State<WeatherPage> {
 
   Row threeHourWeather(int temp, String cond, String time) {
     return Row(
-      mainAxisAlignment:
-      MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         Expanded(
           child: Row(
-            crossAxisAlignment:
-            CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 '$temp',
@@ -391,7 +331,8 @@ class _WeatherPageState extends State<WeatherPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
                                     'Today',
@@ -410,17 +351,17 @@ class _WeatherPageState extends State<WeatherPage> {
                               ),
                               Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.baseline,
+                                        CrossAxisAlignment.baseline,
                                     textBaseline: TextBaseline.alphabetic,
                                     children: [
                                       Text(
                                         '$temperature',
                                         style: const TextStyle(
-                                          fontSize: 24,
+                                          fontSize: 60,
                                           fontWeight: FontWeight.w900,
                                         ),
                                       ),
@@ -435,7 +376,7 @@ class _WeatherPageState extends State<WeatherPage> {
                                   ),
                                   Image.asset(
                                     'images/weather/$condition',
-                                    height: 100,
+                                    height: 85,
                                     fit: BoxFit.fitWidth,
                                   )
                                 ],
@@ -464,30 +405,6 @@ class _WeatherPageState extends State<WeatherPage> {
               const SizedBox(
                 height: 16,
               ),
-              // SizedBox(////////////////////////////////////////////////// GET WEATHER BUTTON
-              //   height: 50,
-              //   width: 300,
-              //   child: TextButton(
-              //     style: ButtonStyle(
-              //       backgroundColor: MaterialStateProperty.all<Color>(
-              //         const Color(0xFF625FFD),
-              //       ),
-              //       shape: MaterialStateProperty.all<
-              //       RoundedRectangleBorder>(
-              //         RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-              //       ),
-              //     ),
-              //     onPressed: () async {
-              //       var forecastData = await weather.getLocationForecast();
-              //       var weatherData = await weather.getLocationWeather();
-              //       updateUI(forecastData, weatherData);
-              //     },
-              //     child: Text(
-              //       'Get Weather Forecast',
-              //       style: blueStyleIconButton,
-              //     ),
-              //   ),
-              // ),
               Expanded(
                 flex: 6,
                 child: Column(
@@ -508,9 +425,12 @@ class _WeatherPageState extends State<WeatherPage> {
                           },
                           child: Text(
                             'Today',
-                            style: todaySelected ? kActiveTextColour : kInactiveTextColour,
+                            style: todaySelected
+                                ? kActiveTextColour
+                                : kInactiveTextColour,
                           ),
-                          style: todaySelected ? kActiveColour : kInactiveColour,
+                          style:
+                              todaySelected ? kActiveColour : kInactiveColour,
                         ),
                         TextButton(
                           onPressed: () {
@@ -525,9 +445,13 @@ class _WeatherPageState extends State<WeatherPage> {
                           },
                           child: Text(
                             'Tomorrow',
-                            style: tomorrowSelected ? kActiveTextColour : kInactiveTextColour,
+                            style: tomorrowSelected
+                                ? kActiveTextColour
+                                : kInactiveTextColour,
                           ),
-                          style: tomorrowSelected ? kActiveColour : kInactiveColour,
+                          style: tomorrowSelected
+                              ? kActiveColour
+                              : kInactiveColour,
                         ),
                         TextButton(
                           onPressed: () {
@@ -542,9 +466,13 @@ class _WeatherPageState extends State<WeatherPage> {
                           },
                           child: Text(
                             thirdWeekDay,
-                            style: thirdDaySelected ? kActiveTextColour : kInactiveTextColour,
+                            style: thirdDaySelected
+                                ? kActiveTextColour
+                                : kInactiveTextColour,
                           ),
-                          style: thirdDaySelected ? kActiveColour : kInactiveColour,
+                          style: thirdDaySelected
+                              ? kActiveColour
+                              : kInactiveColour,
                         ),
                         TextButton(
                           onPressed: () {
@@ -559,26 +487,36 @@ class _WeatherPageState extends State<WeatherPage> {
                           },
                           child: Text(
                             fourthWeekDay,
-                            style: fourthDaySelected ? kActiveTextColour : kInactiveTextColour,
+                            style: fourthDaySelected
+                                ? kActiveTextColour
+                                : kInactiveTextColour,
                           ),
-                          style: fourthDaySelected ? kActiveColour : kInactiveColour,
+                          style: fourthDaySelected
+                              ? kActiveColour
+                              : kInactiveColour,
                         ),
                         TextButton(
                           onPressed: () {
-                            setState(() {
-                              todaySelected = false;
-                              tomorrowSelected = false;
-                              thirdDaySelected = false;
-                              fourthDaySelected = false;
-                              fifthDaySelected = true;
-                            });
+                            setState(
+                              () {
+                                todaySelected = false;
+                                tomorrowSelected = false;
+                                thirdDaySelected = false;
+                                fourthDaySelected = false;
+                                fifthDaySelected = true;
+                              },
+                            );
                             startingNumber = 32;
                           },
                           child: Text(
                             fifthWeekDay,
-                            style: fifthDaySelected ? kActiveTextColour : kInactiveTextColour,
+                            style: fifthDaySelected
+                                ? kActiveTextColour
+                                : kInactiveTextColour,
                           ),
-                          style: fifthDaySelected ? kActiveColour : kInactiveColour,
+                          style: fifthDaySelected
+                              ? kActiveColour
+                              : kInactiveColour,
                         ),
                       ],
                     ),
@@ -599,7 +537,8 @@ class _WeatherPageState extends State<WeatherPage> {
                           splashFactory: NoSplash.splashFactory,
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, '/loading_page');
+                          Navigator.pop(context);
+                          // Navigator.pushNamed(context, '/loading_page');
                         },
                         child: Image.asset(
                           'images/menu/home.png',
@@ -654,5 +593,3 @@ class _WeatherPageState extends State<WeatherPage> {
     );
   }
 }
-
-
