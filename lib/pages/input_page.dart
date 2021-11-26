@@ -55,27 +55,67 @@ class _InputPageState extends State<InputPage> {
 
   // Returns the the data for each location.
   void processLocationData(String originQuery, String destinationQuery) async {
-    NetworkHelper nhOrigin = NetworkHelper(
-        'https://api.tomtom.com/search/2/poiSearch/$originQuery.json?typeahead=true&limit=5&countrySet=PH&key=$kTomApiKey');
-    var originData = await nhOrigin.getData();
+    var originData;
+    bool isCurrentLocation = false;
+
+    if (originQuery != "") {
+      NetworkHelper nhOrigin = NetworkHelper(
+          'https://api.tomtom.com/search/2/poiSearch/$originQuery.json?typeahead=true&limit=5&countrySet=PH&key=$kTomApiKey');
+      originData = await nhOrigin.getData();
+    } else {
+      print('The current location is $lat, $long');
+
+      NetworkHelper nhOrigin = NetworkHelper(
+          'https://api.tomtom.com/search/2/reverseGeocode/$lat%2C%20$long.json?key=$kTomApiKey');
+      originData = await nhOrigin.getData();
+      isCurrentLocation = true;
+    }
 
     NetworkHelper nhDestination = NetworkHelper(
         'https://api.tomtom.com/search/2/poiSearch/$destinationQuery.json?typeahead=true&limit=5&countrySet=PH&key=$kTomApiKey');
-
     var destinationData = await nhDestination.getData();
 
-    // Debugging purposes.
-    print(originData['results'][0]['position']);
-    print(destinationData['results'][0]['position']);
-
     //  Proceed to /map_page carrying this data.
-    // Navigator.pushNamed(context, '/map_page');
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return MapPage(
         originData: originData,
         destinationData: destinationData,
+        isCurrentLocation: isCurrentLocation,
       );
     }));
+  }
+
+  Future<void> _destinationDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Input Missing'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text(
+                  'Please input a destination.',
+                  style: TextStyle(fontSize: 16.0),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Close',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -226,12 +266,22 @@ class _InputPageState extends State<InputPage> {
                           onPressed: () {
                             // Changes the format of the string and destination input.
                             originQuery =
-                                origin.replaceAll(RegExp(' +'), '%20');
-                            destinationQuery =
-                                destination.replaceAll(RegExp(' +'), '%20');
+                                origin.trim().replaceAll(RegExp(' +'), '%20');
+                            print(originQuery);
+                            destinationQuery = destination
+                                .trim()
+                                .replaceAll(RegExp(' +'), '%20');
+                            print(destinationQuery);
 
-                            // Processes location data
-                            processLocationData(originQuery, destinationQuery);
+                            // Checks if there exists a destination input.
+                            if (destinationQuery == "") {
+                              print('There should be a popup here.');
+                              _destinationDialog();
+                            } else {
+                              // Processes location data
+                              processLocationData(
+                                  originQuery, destinationQuery);
+                            }
                           },
                           child: AutoSizeText(
                             'Get The Route',

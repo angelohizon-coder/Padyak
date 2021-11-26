@@ -3,10 +3,11 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'panel_widget.dart';
 
 class MapPage extends StatefulWidget {
-  MapPage({this.originData, this.destinationData});
+  MapPage({this.originData, this.destinationData, this.isCurrentLocation});
 
   final originData;
   final destinationData;
+  final isCurrentLocation;
   @override
   _MapPageState createState() => _MapPageState();
 }
@@ -26,15 +27,25 @@ class _MapPageState extends State<MapPage> {
     super.initState();
 
     // Extracts the data to respective variables.
-    placeLocationData(widget.originData, widget.destinationData);
+    placeLocationData(
+        widget.originData, widget.destinationData, widget.isCurrentLocation);
   }
 
   // Method used to extract the needed data from this JSON.
-  void placeLocationData(dynamic originData, dynamic destinationData) {
+  void placeLocationData(
+      dynamic originData, dynamic destinationData, bool isCurrentLocation) {
     setState(() {
-      originName = originData['results'][0]['poi']['name'];
-      originLatitude = originData['results'][0]['position']['lat'];
-      originLongitude = originData['results'][0]['position']['lon'];
+      if (!isCurrentLocation) {
+        originName = originData['results'][0]['poi']['name'];
+        originLatitude = originData['results'][0]['position']['lat'];
+        originLongitude = originData['results'][0]['position']['lon'];
+      } else {
+        originName = originData['addresses'][0]['address']['freeformAddress'];
+        String pos = originData['addresses'][0]['position'];
+        List<String> temp = pos.split(',');
+        originLatitude = double.parse(temp[0]);
+        originLongitude = double.parse(temp[1]);
+      }
 
       destinationName = destinationData['results'][0]['poi']['name'];
       destinationLatitude = destinationData['results'][0]['position']['lat'];
