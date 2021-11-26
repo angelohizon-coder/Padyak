@@ -9,6 +9,7 @@ class PanelWidget extends StatefulWidget {
   final double distance;
   final int duration;
   final String address;
+<<<<<<< HEAD
   const PanelWidget({
     Key? key,
     required this.controller,
@@ -17,6 +18,16 @@ class PanelWidget extends StatefulWidget {
     required this.duration,
     required this.address
   }) : super(key: key);
+=======
+  const PanelWidget(
+      {Key? key,
+      required this.controller,
+      required this.panelController,
+      required this.distance,
+      required this.duration,
+      required this.address})
+      : super(key: key);
+>>>>>>> 676e656 (refactor)
 
   @override
   State<PanelWidget> createState() => _PanelWidgetState();
@@ -42,6 +53,7 @@ class _PanelWidgetState extends State<PanelWidget> {
   }
 
   Widget buildTextInformation() {
+<<<<<<< HEAD
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -181,6 +193,152 @@ class _PanelWidgetState extends State<PanelWidget> {
             ],
           ),
         ],
+=======
+    return Scrollbar(
+      isAlwaysShown: true,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 12,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  widget.address,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const Text(
+                  'Address',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w300,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 12,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Image.asset(
+                      'images/map/paper-plane.png',
+                      color: const Color(0xFF625FFD),
+                      height: 30,
+                    ),
+                    const SizedBox(
+                      width: 25,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${widget.distance} km',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        const Text(
+                          'Distance',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Image.asset(
+                      'images/map/clock.png',
+                      color: const Color(0xFF625FFD),
+                      height: 30,
+                    ),
+                    const SizedBox(
+                      width: 25,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${widget.duration} mins',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        const Text(
+                          'Estimated Time',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              ],
+            ),
+            const SizedBox(
+              height: 32,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'images/map/flame.png',
+                  color: const Color(0xFF625FFD),
+                  height: 30,
+                ),
+                const SizedBox(
+                  width: 25,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      '200 Calories',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      'Calories Burned',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+>>>>>>> 676e656 (refactor)
       ),
     );
   }

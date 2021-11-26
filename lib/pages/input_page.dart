@@ -407,6 +407,7 @@ class _InputPageState extends State<InputPage> {
                         child: TextButton(
                           style: noSplashEffect,
                           onPressed: () {
+<<<<<<< HEAD
                             Navigator.pushNamed(context, '/weather_page');
                           },
                           child: Image.asset(
@@ -421,6 +422,8 @@ class _InputPageState extends State<InputPage> {
                         child: TextButton(
                           style: noSplashEffect,
                           onPressed: () {
+=======
+>>>>>>> 676e656 (refactor)
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -442,6 +445,7 @@ class _InputPageState extends State<InputPage> {
                         child: TextButton(
                           style: noSplashEffect,
                           onPressed: () {
+<<<<<<< HEAD
                             Navigator.pushNamed(context, '/proximity_page');
                           },
                           child: Image.asset(
@@ -456,6 +460,8 @@ class _InputPageState extends State<InputPage> {
                         child: TextButton(
                           style: noSplashEffect,
                           onPressed: () {
+=======
+>>>>>>> 676e656 (refactor)
                             Navigator.pushNamed(
                                 context, '/proximity_loading_page');
                           },

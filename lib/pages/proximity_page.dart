@@ -104,7 +104,11 @@ class _ProximityPageState extends State<ProximityPage> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           centerTitle: true,
+<<<<<<< HEAD
           elevation: 0,
+=======
+          elevation: 1,
+>>>>>>> 676e656 (refactor)
           iconTheme: const IconThemeData(color: Colors.black),
           title: const Text(
             'Proximity Map',
