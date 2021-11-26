@@ -34,11 +34,10 @@ class _ProximityPageState extends State<ProximityPage> {
   Marker? _currentLocMarker;
   void getLocationData() async {
     updateLocation = await LocationModel().getUserLocation();
-
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _initialCamPos = CameraPosition(target: widget.currentLocation, zoom: 12);
     poiPoints = widget.poiPoints;
@@ -46,13 +45,15 @@ class _ProximityPageState extends State<ProximityPage> {
 
     curLat = widget.currentLocation.latitude;
     curLong = widget.currentLocation.longitude;
-    circles = {Circle(
-      circleId: const CircleId('Current Location'),
-      center: LatLng(curLat!, curLong!),
-      radius: 5000,
-      fillColor: Colors.blue.shade100.withOpacity(0.5),
-      strokeColor:  Colors.blue.shade100.withOpacity(0.1),
-    )};
+    circles = {
+      Circle(
+        circleId: const CircleId('Current Location'),
+        center: LatLng(curLat!, curLong!),
+        radius: 3000,
+        fillColor: Colors.blue.shade100.withOpacity(0.5),
+        strokeColor: Colors.blue.shade100.withOpacity(0.1),
+      )
+    };
 
     _currentLocMarker = Marker(
       markerId: const MarkerId('current_location'),
@@ -61,9 +62,10 @@ class _ProximityPageState extends State<ProximityPage> {
       position: LatLng(curLat!, curLong!),
     );
   }
+
   //List<Marker> markerList = someMethod;
   @override
-  void dispose(){
+  void dispose() {
     _controller.dispose();
     super.dispose();
   }
@@ -71,16 +73,17 @@ class _ProximityPageState extends State<ProximityPage> {
   Future<bool> onWillPop() async {
     final shouldPop = await showDialog(
       context: context,
-      builder: (context)=> AlertDialog(
+      builder: (context) => AlertDialog(
         title: const Text('Exit the map?'),
         content: const Text('Do you want to exit map?'),
         actions: [
           TextButton(
-            onPressed: ()=> Navigator.of(context).pop(false),
+            onPressed: () => Navigator.of(context).pop(false),
             child: const Text('No'),
           ),
           TextButton(
-            onPressed: ()=> Navigator.of(context).popAndPushNamed('/loading_page'),
+            onPressed: () =>
+                Navigator.of(context).popAndPushNamed('/loading_page'),
             child: const Text('Yes'),
           ),
         ],
@@ -88,6 +91,7 @@ class _ProximityPageState extends State<ProximityPage> {
     );
     return shouldPop;
   }
+
   @override
   Widget build(BuildContext context) {
     // Takes the height of the object and multiply it by 10%. btw the object is the height
@@ -118,15 +122,16 @@ class _ProximityPageState extends State<ProximityPage> {
               initialCameraPosition: _initialCamPos,
               onMapCreated: (controller) => _controller = controller,
               markers: {
-                if(_currentLocMarker != null)_currentLocMarker!,
-                if(poiPoints.isNotEmpty && poiNames.isNotEmpty)
-                  for(int x = 0; x < poiPoints.length; x++)
+                if (_currentLocMarker != null) _currentLocMarker!,
+                if (poiPoints.isNotEmpty && poiNames.isNotEmpty)
+                  for (int x = 0; x < poiPoints.length; x++)
                     Marker(
                       markerId: MarkerId(poiNames[x]),
                       infoWindow: InfoWindow(title: poiNames[x]),
-                      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRose),
+                      icon: BitmapDescriptor.defaultMarkerWithHue(
+                          BitmapDescriptor.hueRose),
                       position: poiPoints[x],
-                      onTap: (){
+                      onTap: () {
                         print(poiPoints);
                         //Point of Interest or POI = bikeshop
                         _addMarker(poiPoints[x]);
@@ -135,13 +140,12 @@ class _ProximityPageState extends State<ProximityPage> {
               },
               circles: circles,
               polylines: {
-                if(_info != null)
+                if (_info != null)
                   Polyline(
                       polylineId: const PolylineId('overview_polyline'),
                       color: Colors.deepPurple,
                       width: 10,
-                      points: _info!.polylinePoints
-                  )
+                      points: _info!.polylinePoints)
               },
             ),
             Positioned(
@@ -164,9 +168,10 @@ class _ProximityPageState extends State<ProximityPage> {
       ),
     );
   }
-  void _addMarker(LatLng pos) async{
 
-    final directions = await Direction().getDirection(origin: LatLng(curLat!,curLong!), destination: pos);
-    setState(() =>_info = directions);
+  void _addMarker(LatLng pos) async {
+    final directions = await Direction()
+        .getDirection(origin: LatLng(curLat!, curLong!), destination: pos);
+    setState(() => _info = directions);
   }
 }

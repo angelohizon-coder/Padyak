@@ -6,10 +6,11 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'panel_widget.dart';
 
 class MapPage extends StatefulWidget {
-  MapPage({this.originData, this.destinationData});
+  MapPage({this.originData, this.destinationData, this.isCurrentLocation});
 
   final originData;
   final destinationData;
+  final isCurrentLocation;
   @override
   _MapPageState createState() => _MapPageState();
 }
@@ -28,18 +29,27 @@ class _MapPageState extends State<MapPage> {
   double duration = 0;
   double distance = 0;
 
-
   // Method used to extract the needed data from this JSON.
-  void placeLocationData(dynamic originData, dynamic destinationData) {
+  void placeLocationData(
+      dynamic originData, dynamic destinationData, bool isCurrentLocation) {
     setState(() {
-      originName = originData['results'][0]['poi']['name'];
-      originLatitude = originData['results'][0]['position']['lat'];
-      originLongitude = originData['results'][0]['position']['lon'];
+      if (!isCurrentLocation) {
+        originName = originData['results'][0]['poi']['name'];
+        originLatitude = originData['results'][0]['position']['lat'];
+        originLongitude = originData['results'][0]['position']['lon'];
+      } else {
+        originName = originData['addresses'][0]['address']['freeformAddress'];
+        String pos = originData['addresses'][0]['position'];
+        List<String> temp = pos.split(',');
+        originLatitude = double.parse(temp[0]);
+        originLongitude = double.parse(temp[1]);
+      }
 
       destinationName = destinationData['results'][0]['poi']['name'];
       destinationLatitude = destinationData['results'][0]['position']['lat'];
       destinationLongitude = destinationData['results'][0]['position']['lon'];
-      destinationAddress = destinationData['results'][0]['address']['freeformAddress'];
+      destinationAddress =
+          destinationData['results'][0]['address']['freeformAddress'];
 
       // For debugging purposes.
       print(originName);
@@ -58,114 +68,141 @@ class _MapPageState extends State<MapPage> {
   late Marker _destination;
   Directions? _info;
 
-
   @override
-  void initState(){
+  void initState() {
     super.initState();
     // Extracts the data to respective variables.
-    placeLocationData(widget.originData, widget.destinationData);
-    _initialCamPos = CameraPosition(target: LatLng(originLatitude!,originLongitude!), zoom: 13.0);
+    placeLocationData(
+        widget.originData, widget.destinationData, widget.isCurrentLocation);
+    _initialCamPos = CameraPosition(
+        target: LatLng(originLatitude!, originLongitude!), zoom: 13.0);
     _addMarker();
     /*lat = widget.currentLocation.latitude;
     long = widget.currentLocation.longitude;*/
   }
+
   //<variable_name>! null checks each variable that is declared <Type>?
   @override
-  void dispose(){
-
+  void dispose() {
     _controller.dispose();
     super.dispose();
   }
+
+  Future<bool> onWillPop() async {
+    final shouldPop = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('New Route'),
+        content: const Text('Do you want to try another route?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.popAndPushNamed(context, '/loading_page');
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+    return shouldPop;
+  }
+
   @override
   Widget build(BuildContext context) {
     final panelHeightClosed = MediaQuery.of(context).size.height * 0.125;
     final panelHeightOpen = MediaQuery.of(context).size.height * 0.2;
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        title: const Text('Route'),
-        actions: [
-          TextButton(
-            onPressed: () => _controller.animateCamera(
-              CameraUpdate.newCameraPosition(
-                CameraPosition(
-                  target: _origin.position,
-                  zoom: 18,
-                  tilt: 50.0,
-                ),
-              ),
-            ),
-            style: TextButton.styleFrom(
-              primary: Colors.cyan,
-              textStyle: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            child: const Text('Your Location'),
-          ),
-          TextButton(
-            onPressed: () => _controller.animateCamera(
-              CameraUpdate.newCameraPosition(
-                CameraPosition(
-                  target: _destination.position,
-                  zoom: 18,
-                  tilt: 50.0,
-                ),
-              ),
-            ),
-            style: TextButton.styleFrom(
-              primary: Colors.orange,
-              textStyle: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            child: const Text('Destination'),
-          ),
-        ],
-      ),
-      body: SlidingUpPanel(
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(18),
-        ),
-        maxHeight: panelHeightOpen,
-        minHeight: panelHeightClosed,
-        controller: panelController,
-        body: SizedBox(
-          width: double.infinity,
-          height: double.infinity,
-          child: Center(
-            child: GoogleMap(
-              myLocationButtonEnabled: false,
-              zoomControlsEnabled: false,
-              initialCameraPosition: _initialCamPos,
-              onMapCreated: (controller) => _controller = controller,
-              markers: {
-                if(_origin != null) _origin,
-                if(_destination != null) _destination,
-
-              },
-              polylines: {
-                if(_info != null)
-                  Polyline(
-                    polylineId: PolylineId('overview_polyline'),
-                    color: Colors.deepPurple,
-                    width: 10,
-                    points: _info!.polylinePoints,
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: false,
+          title: const Text('Route'),
+          actions: [
+            TextButton(
+              onPressed: () => _controller.animateCamera(
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                    target: _origin.position,
+                    zoom: 18,
+                    tilt: 50.0,
                   ),
-              },
+                ),
+              ),
+              style: TextButton.styleFrom(
+                primary: Colors.cyan,
+                textStyle: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              child: const Text('Your Location'),
+            ),
+            TextButton(
+              onPressed: () => _controller.animateCamera(
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                    target: _destination.position,
+                    zoom: 18,
+                    tilt: 50.0,
+                  ),
+                ),
+              ),
+              style: TextButton.styleFrom(
+                primary: Colors.orange,
+                textStyle: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              child: const Text('Destination'),
+            ),
+          ],
+        ),
+        body: SlidingUpPanel(
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(18),
+          ),
+          maxHeight: panelHeightOpen,
+          minHeight: panelHeightClosed,
+          controller: panelController,
+          body: SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: Center(
+              child: GoogleMap(
+                myLocationButtonEnabled: false,
+                zoomControlsEnabled: false,
+                initialCameraPosition: _initialCamPos,
+                onMapCreated: (controller) => _controller = controller,
+                markers: {
+                  if (_origin != null) _origin,
+                  if (_destination != null) _destination,
+                },
+                polylines: {
+                  if (_info != null)
+                    Polyline(
+                      polylineId: PolylineId('overview_polyline'),
+                      color: Colors.deepPurple,
+                      width: 10,
+                      points: _info!.polylinePoints,
+                    ),
+                },
+              ),
             ),
           ),
-        ),
-        panelBuilder: (controller) => PanelWidget(
-          address: destinationAddress,
-          duration: duration.toInt(),
-          distance: distance,
-          controller: controller,
-          panelController: panelController,
+          panelBuilder: (controller) => PanelWidget(
+            address: destinationAddress,
+            duration: duration.toInt(),
+            distance: distance,
+            controller: controller,
+            panelController: panelController,
+          ),
         ),
       ),
-
     );
   }
-  void _addMarker() async{
+
+  void _addMarker() async {
     LatLng start = LatLng(originLatitude!, originLongitude!);
-    LatLng end = LatLng(destinationLatitude!,destinationLongitude!);
+    LatLng end = LatLng(destinationLatitude!, destinationLongitude!);
     setState(() {
       _origin = Marker(
         markerId: MarkerId('origin'),
@@ -188,8 +225,8 @@ class _MapPageState extends State<MapPage> {
     );
     setState(() {
       _info = directions;
-      duration = (_info!.totalDuration/60).roundToDouble();
-      distance = (_info!.totalDistance/1000).roundToDouble();
+      duration = (_info!.totalDuration / 60).roundToDouble();
+      distance = (_info!.totalDistance / 1000).roundToDouble();
     });
   }
 }

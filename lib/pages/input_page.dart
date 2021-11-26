@@ -3,10 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-<<<<<<< HEAD
 import 'package:padyak/pages/weather_loading_page.dart';
-=======
->>>>>>> origin/grandmaster
 import '../constants.dart';
 import 'package:padyak/services/networking.dart';
 import 'package:padyak/pages/map_page.dart';
@@ -27,8 +24,8 @@ class _InputPageState extends State<InputPage> {
   double? lat;
   double? long;
 
-  var msgController1 =TextEditingController();
-  var msgController2 =TextEditingController();
+  var msgController1 = TextEditingController();
+  var msgController2 = TextEditingController();
   Marker? _currentLocMarker;
 
   // Properties for storing the origin and destination.
@@ -61,28 +58,32 @@ class _InputPageState extends State<InputPage> {
 
   // Returns the the data for each location.
   void processLocationData(String originQuery, String destinationQuery) async {
-    NetworkHelper nhOrigin = NetworkHelper(
-        'https://api.tomtom.com/search/2/poiSearch/$originQuery.json?typeahead=true&limit=5&countrySet=PH&key=$kTomAPIKey');
-    var originData = await nhOrigin.getData();
+    var originData;
+    bool isCurrentLocation = false;
+
+    if (originQuery != "") {
+      NetworkHelper nhOrigin = NetworkHelper(
+          'https://api.tomtom.com/search/2/poiSearch/$originQuery.json?typeahead=true&limit=5&countrySet=PH&key=$kTomAPIKey');
+      originData = await nhOrigin.getData();
+    } else {
+      print('The current location is $lat, $long');
+
+      NetworkHelper nhOrigin = NetworkHelper(
+          'https://api.tomtom.com/search/2/reverseGeocode/$lat%2C%20$long.json?key=$kTomAPIKey');
+      originData = await nhOrigin.getData();
+      isCurrentLocation = true;
+    }
 
     NetworkHelper nhDestination = NetworkHelper(
         'https://api.tomtom.com/search/2/poiSearch/$destinationQuery.json?typeahead=true&limit=5&countrySet=PH&key=$kTomAPIKey');
-
     var destinationData = await nhDestination.getData();
 
-    // Debugging purposes.
-    print(originData['results'][0]['position']);
-    print(destinationData['results'][0]['position']);
-    //results[0].poi.name
-    print(destinationData['results'][0]['poi']['name']);
-    //results[0].address.freeformAddress
-    print(destinationData['results'][0]['address']['freeformAddress']);
     //  Proceed to /map_page carrying this data.
-    // Navigator.pushNamed(context, '/map_page');
     Navigator.push(context, MaterialPageRoute(builder: (context) {
       return MapPage(
         originData: originData,
         destinationData: destinationData,
+        isCurrentLocation: isCurrentLocation,
       );
     }));
   }
@@ -90,16 +91,16 @@ class _InputPageState extends State<InputPage> {
   Future<bool> onWillPop() async {
     final shouldPop = await showDialog(
       context: context,
-      builder: (context)=> AlertDialog(
+      builder: (context) => AlertDialog(
         title: const Text('Exit'),
         content: const Text('Do you want to exit app?'),
         actions: [
           TextButton(
-            onPressed: ()=> Navigator.of(context).pop(false),
+            onPressed: () => Navigator.of(context).pop(false),
             child: const Text('No'),
           ),
           TextButton(
-            onPressed: ()=> SystemNavigator.pop(),
+            onPressed: () => SystemNavigator.pop(),
             child: const Text('Yes'),
           ),
         ],
@@ -107,6 +108,40 @@ class _InputPageState extends State<InputPage> {
     );
     return shouldPop;
   }
+
+  Future<void> _destinationDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Input Missing'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text(
+                  'Please input a destination.',
+                  style: TextStyle(fontSize: 16.0),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'Close',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -163,7 +198,7 @@ class _InputPageState extends State<InputPage> {
                                   ),
                                   subtitle: Container(
                                     padding:
-                                    const EdgeInsets.fromLTRB(0, 0, 60, 0),
+                                        const EdgeInsets.fromLTRB(0, 0, 60, 0),
                                     child: TextField(
                                       controller: msgController1,
                                       onChanged: (text) => setState(() {
@@ -208,7 +243,7 @@ class _InputPageState extends State<InputPage> {
                                   ),
                                   subtitle: Container(
                                     padding:
-                                    const EdgeInsets.fromLTRB(0, 0, 60, 0),
+                                        const EdgeInsets.fromLTRB(0, 0, 60, 0),
                                     child: TextField(
                                       controller: msgController2,
                                       onChanged: (text) => setState(() {
@@ -259,12 +294,24 @@ class _InputPageState extends State<InputPage> {
                             onPressed: () {
                               // Changes the format of the string and destination input.
                               originQuery =
-                                  origin.replaceAll(RegExp(' +'), '%20');
-                              destinationQuery =
-                                  destination.replaceAll(RegExp(' +'), '%20');
+                                  origin.trim().replaceAll(RegExp(' +'), '%20');
+                              print(originQuery);
+                              destinationQuery = destination
+                                  .trim()
+                                  .replaceAll(RegExp(' +'), '%20');
+                              print(destinationQuery);
 
-                              // Processes location data
-                              processLocationData(originQuery, destinationQuery);
+                              // Checks if there exists a destination input.
+                              if (destinationQuery == "") {
+                                print('There should be a popup here.');
+                                _destinationDialog();
+                              } else {
+                                // Processes location data
+                                processLocationData(
+                                    originQuery, destinationQuery);
+                              }
+
+                              // Clears the inputs.
                               msgController1.clear();
                               msgController2.clear();
                             },
@@ -300,9 +347,10 @@ class _InputPageState extends State<InputPage> {
                               zoomControlsEnabled: false,
                               initialCameraPosition: _initialCamPos,
                               onMapCreated: (controller) =>
-                              _controller = controller,
+                                  _controller = controller,
                               markers: {
-                                if (_currentLocMarker != null) _currentLocMarker!
+                                if (_currentLocMarker != null)
+                                  _currentLocMarker!
                               },
                             ),
                             Positioned(
@@ -339,8 +387,8 @@ class _InputPageState extends State<InputPage> {
                             backgroundColor: MaterialStateProperty.all<Color>(
                               const Color(0xFF625FFD),
                             ),
-                            shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16.0),
                               ),
@@ -367,54 +415,54 @@ class _InputPageState extends State<InputPage> {
                           ),
                         ),
                       ),
-<<<<<<< HEAD
-                    ),
-                    SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: TextButton(
-                        style: noSplashEffect,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return const WeatherLoadingPage();
-                              },
-                            ),
-                          );
-                        },
-                        child: Image.asset(
-                          'images/menu/cloud-cut-version.png',
-                          color: const Color(0xFFC4C4C4),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: TextButton(
-                        style: noSplashEffect,
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/proximity_page');
-                        },
-                        child: Image.asset(
-                          'images/menu/radar.png',
-                          color: const Color(0xFFC4C4C4),
-=======
                       SizedBox(
                         height: 50,
                         width: 50,
                         child: TextButton(
                           style: noSplashEffect,
                           onPressed: () {
-                            Navigator.pushNamed(context, '/proximity_loading_page');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return const WeatherLoadingPage();
+                                },
+                              ),
+                            );
+                          },
+                          child: Image.asset(
+                            'images/menu/cloud-cut-version.png',
+                            color: const Color(0xFFC4C4C4),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: TextButton(
+                          style: noSplashEffect,
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/proximity_page');
                           },
                           child: Image.asset(
                             'images/menu/radar.png',
                             color: const Color(0xFFC4C4C4),
                           ),
->>>>>>> origin/grandmaster
+                        ),
+                      ),
+                      SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: TextButton(
+                          style: noSplashEffect,
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, '/proximity_loading_page');
+                          },
+                          child: Image.asset(
+                            'images/menu/radar.png',
+                            color: const Color(0xFFC4C4C4),
+                          ),
                         ),
                       ),
                     ],
