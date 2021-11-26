@@ -8,9 +8,11 @@ import 'package:flutter/widgets.dart';
 import 'package:padyak/services/weather.dart';
 
 class WeatherPage extends StatefulWidget {
-  const WeatherPage({
-    Key? key,
-  }) : super(key: key);
+  const WeatherPage(this.forecastData, this.weatherData, {Key? key})
+      : super(key: key);
+
+  final forecastData;
+  final weatherData;
 
   @override
   _WeatherPageState createState() => _WeatherPageState();
@@ -42,13 +44,7 @@ class _WeatherPageState extends State<WeatherPage> {
   void initState() {
     super.initState();
     updateUI(widget.key, widget.key);
-    initWeather();
-  }
-
-  void initWeather() async {
-    var forecastData = await weather.getLocationForecast();
-    var weatherData = await weather.getLocationWeather();
-    updateUI(forecastData, weatherData);
+    updateUI(widget.forecastData, widget.weatherData);
   }
 
   void updateUI(dynamic forecastData, dynamic weatherData) {
@@ -537,8 +533,7 @@ class _WeatherPageState extends State<WeatherPage> {
                           splashFactory: NoSplash.splashFactory,
                         ),
                         onPressed: () {
-                          Navigator.pop(context);
-                          // Navigator.pushNamed(context, '/loading_page');
+                          Navigator.pushNamed(context, '/loading_page');
                         },
                         child: Image.asset(
                           'images/menu/home.png',

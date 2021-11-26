@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:padyak/pages/weather_loading_page.dart';
 import 'pages/result_page.dart';
-import 'pages/weather_page.dart';
 import 'pages/map_page.dart';
 import 'pages/proximity_page.dart';
 import 'package:padyak/pages/loading_page.dart';
@@ -17,7 +17,7 @@ void main() {
         '/proximity_page': (context) => const ProximityPage(),
         '/map_page': (context) => MapPage(),
         '/result_page': (context) => const ResultPage(),
-        'weather_page': (context) => const WeatherPage()
+        '/weather_loading_page': (context) => const WeatherLoadingPage(),
       },
     ),
   );

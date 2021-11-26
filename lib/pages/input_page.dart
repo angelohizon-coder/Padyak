@@ -2,13 +2,13 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:padyak/pages/weather_page.dart';
+import 'package:padyak/pages/weather_loading_page.dart';
 import '../constants.dart';
 import 'package:padyak/services/networking.dart';
 import 'package:padyak/pages/map_page.dart';
 
 class InputPage extends StatefulWidget {
-  InputPage({required this.currentLocation});
+  const InputPage({required this.currentLocation});
 
   final LatLng currentLocation;
 
@@ -331,7 +331,7 @@ class _InputPageState extends State<InputPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) {
-                                return const WeatherPage();
+                                return const WeatherLoadingPage();
                               },
                             ),
                           );
