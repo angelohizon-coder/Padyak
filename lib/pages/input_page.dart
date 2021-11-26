@@ -407,23 +407,6 @@ class _InputPageState extends State<InputPage> {
                         child: TextButton(
                           style: noSplashEffect,
                           onPressed: () {
-<<<<<<< HEAD
-                            Navigator.pushNamed(context, '/weather_page');
-                          },
-                          child: Image.asset(
-                            'images/menu/cloud-cut-version.png',
-                            color: const Color(0xFFC4C4C4),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: TextButton(
-                          style: noSplashEffect,
-                          onPressed: () {
-=======
->>>>>>> 676e656 (refactor)
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -445,23 +428,6 @@ class _InputPageState extends State<InputPage> {
                         child: TextButton(
                           style: noSplashEffect,
                           onPressed: () {
-<<<<<<< HEAD
-                            Navigator.pushNamed(context, '/proximity_page');
-                          },
-                          child: Image.asset(
-                            'images/menu/radar.png',
-                            color: const Color(0xFFC4C4C4),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: TextButton(
-                          style: noSplashEffect,
-                          onPressed: () {
-=======
->>>>>>> 676e656 (refactor)
                             Navigator.pushNamed(
                                 context, '/proximity_loading_page');
                           },

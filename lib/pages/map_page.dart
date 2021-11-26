@@ -113,26 +113,17 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    final panelHeightClosed = MediaQuery.of(context).size.height * 0.125;
-    final panelHeightOpen = MediaQuery.of(context).size.height * 0.2;
-=======
     final panelHeightClosed = MediaQuery.of(context).size.height * 0.2;
     final panelHeightOpen = MediaQuery.of(context).size.height * 0.25;
->>>>>>> 676e656 (refactor)
+
     return WillPopScope(
       onWillPop: onWillPop,
       child: Scaffold(
         appBar: AppBar(
-<<<<<<< HEAD
           centerTitle: false,
-          title: const Text('Route'),
-=======
           backgroundColor: Colors.white,
-          centerTitle: false,
           elevation: 1,
           iconTheme: const IconThemeData(color: Colors.black),
->>>>>>> 676e656 (refactor)
           actions: [
             TextButton(
               onPressed: () => _controller.animateCamera(
@@ -146,11 +137,7 @@ class _MapPageState extends State<MapPage> {
               ),
               style: TextButton.styleFrom(
                 primary: Colors.cyan,
-<<<<<<< HEAD
-                textStyle: const TextStyle(fontWeight: FontWeight.w600),
-=======
                 textStyle: const TextStyle(fontWeight: FontWeight.w900),
->>>>>>> 676e656 (refactor)
               ),
               child: const Text('Your Location'),
             ),
@@ -166,22 +153,15 @@ class _MapPageState extends State<MapPage> {
               ),
               style: TextButton.styleFrom(
                 primary: Colors.orange,
-<<<<<<< HEAD
-                textStyle: const TextStyle(fontWeight: FontWeight.w600),
-=======
                 textStyle: const TextStyle(fontWeight: FontWeight.w900),
->>>>>>> 676e656 (refactor)
               ),
               child: const Text('Destination'),
             ),
           ],
-<<<<<<< HEAD
-=======
           title: const Text(
             'Route',
             style: TextStyle(color: Colors.black),
           ),
->>>>>>> 676e656 (refactor)
         ),
         body: SlidingUpPanel(
           borderRadius: const BorderRadius.vertical(
