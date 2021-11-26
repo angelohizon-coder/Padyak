@@ -6,11 +6,16 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 class PanelWidget extends StatefulWidget {
   final ScrollController controller;
   final PanelController panelController;
-
+  final double distance;
+  final int duration;
+  final String address;
   const PanelWidget({
     Key? key,
     required this.controller,
     required this.panelController,
+    required this.distance,
+    required this.duration,
+    required this.address
   }) : super(key: key);
 
   @override
@@ -30,7 +35,7 @@ class _PanelWidgetState extends State<PanelWidget> {
         buildDragHandle(),
         buildTextInformation(),
         const SizedBox(
-          height: 24,
+          height: 20,
         ),
       ],
     );
@@ -41,6 +46,27 @@ class _PanelWidgetState extends State<PanelWidget> {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                widget.address,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const Text(
+                'Address',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+            ],
+          ),
+
           const SizedBox(
             height: 12,
           ),
@@ -59,17 +85,18 @@ class _PanelWidgetState extends State<PanelWidget> {
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        '30 KM',
-                        style: TextStyle(
+                        '${widget.distance} km',
+                        style: const TextStyle(
+                          fontSize: 22,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       ),
-                      Text(
+                      const Text(
                         'Distance',
                         style: TextStyle(
                           fontSize: 14,
@@ -92,17 +119,18 @@ class _PanelWidgetState extends State<PanelWidget> {
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        '50 Minutes',
-                        style: TextStyle(
+                        '${widget.duration} mins',
+                        style: const TextStyle(
+                          fontSize: 22,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       ),
-                      Text(
+                      const Text(
                         'Estimated Time',
                         style: TextStyle(
                           fontSize: 14,

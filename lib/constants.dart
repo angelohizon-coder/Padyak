@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 // API Keys
-String kTomApiKey = 'kHHPnG86GkPYyfApHjuMDzfp8ynAPMkE';
+const String kTomAPIKey = 'kKqkcovj3TB0E8EkJbPQ1bqzBHFo3AWp';
+//URLs
+const tomDirectionsUrl = 'https://api.tomtom.com/routing/1/calculateRoute/';
+const tomPOIsUrl = 'https://api.tomtom.com/search/2/poiSearch/bike.json?';
 
 var blueStyleIconButton = const TextStyle(
   color: Colors.white,

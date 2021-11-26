@@ -570,7 +570,7 @@ class _WeatherPageState extends State<WeatherPage> {
                       child: TextButton(
                         style: noSplashEffect,
                         onPressed: () {
-                          Navigator.pushNamed(context, '/proximity_page');
+                          Navigator.pushNamed(context, '/proximity_loading_page');
                         },
                         child: Image.asset(
                           'images/menu/radar.png',

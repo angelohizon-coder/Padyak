@@ -1,23 +1,31 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:padyak/pages/weather_loading_page.dart';
+=======
+import 'package:padyak/pages/proximity_loading_page.dart';
+>>>>>>> origin/grandmaster
 import 'pages/result_page.dart';
 import 'pages/map_page.dart';
-import 'pages/proximity_page.dart';
 import 'package:padyak/pages/loading_page.dart';
 
 void main() {
   runApp(
     MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFEDEDED),
       ),
       initialRoute: '/loading_page',
       routes: {
-        '/loading_page': (context) => LoadingScreen(),
-        '/proximity_page': (context) => const ProximityPage(),
+        '/loading_page':(context) => LoadingScreen(),
+        '/proximity_loading_page':(context) => ProximityLoadingScreen(),
         '/map_page': (context) => MapPage(),
         '/result_page': (context) => const ResultPage(),
+<<<<<<< HEAD
         '/weather_loading_page': (context) => const WeatherLoadingPage(),
+=======
+        '/weather_page': (context) => const WeatherPage()
+>>>>>>> origin/grandmaster
       },
     ),
   );
