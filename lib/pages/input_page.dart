@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:padyak/pages/weather_loading_page.dart';
+import 'package:padyak/pages/map_loading_page.dart';
 import '../constants.dart';
-import 'package:padyak/services/networking.dart';
-import 'package:padyak/pages/map_page.dart';
 
 class InputPage extends StatefulWidget {
   const InputPage({required this.currentLocation});
@@ -54,38 +53,6 @@ class _InputPageState extends State<InputPage> {
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-
-  // Returns the the data for each location.
-  void processLocationData(String originQuery, String destinationQuery) async {
-    var originData;
-    bool isCurrentLocation = false;
-
-    if (originQuery != "") {
-      NetworkHelper nhOrigin = NetworkHelper(
-          'https://api.tomtom.com/search/2/poiSearch/$originQuery.json?typeahead=true&limit=5&countrySet=PH&key=$kTomAPIKey');
-      originData = await nhOrigin.getData();
-    } else {
-      print('The current location is $lat, $long');
-
-      NetworkHelper nhOrigin = NetworkHelper(
-          'https://api.tomtom.com/search/2/reverseGeocode/$lat%2C%20$long.json?key=$kTomAPIKey');
-      originData = await nhOrigin.getData();
-      isCurrentLocation = true;
-    }
-
-    NetworkHelper nhDestination = NetworkHelper(
-        'https://api.tomtom.com/search/2/poiSearch/$destinationQuery.json?typeahead=true&limit=5&countrySet=PH&key=$kTomAPIKey');
-    var destinationData = await nhDestination.getData();
-
-    //  Proceed to /map_page carrying this data.
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return MapPage(
-        originData: originData,
-        destinationData: destinationData,
-        isCurrentLocation: isCurrentLocation,
-      );
-    }));
   }
 
   Future<bool> onWillPop() async {
@@ -303,12 +270,20 @@ class _InputPageState extends State<InputPage> {
 
                               // Checks if there exists a destination input.
                               if (destinationQuery == "") {
-                                print('There should be a popup here.');
                                 _destinationDialog();
                               } else {
-                                // Processes location data
-                                processLocationData(
-                                    originQuery, destinationQuery);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return MapLoadingScreen(
+                                        originQuery: originQuery,
+                                        destinationQuery: destinationQuery,
+                                        currentLocation: widget.currentLocation,
+                                      );
+                                    },
+                                  ),
+                                );
                               }
 
                               // Clears the inputs.
