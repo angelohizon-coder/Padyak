@@ -6,17 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 class ResultPage extends StatefulWidget {
-  final double distance;
+  late final double distance;
   final double estimatedTime;
 
-  ResultPage({required this.distance,required this.estimatedTime});
+  ResultPage({required this.distance, required this.estimatedTime});
 
   @override
   _ResultPageState createState() => _ResultPageState();
 }
 
 class _ResultPageState extends State<ResultPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,15 +33,15 @@ class _ResultPageState extends State<ResultPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
                       Text(
-                        'Today',
+                        'Here\'s the',
                         style: TextStyle(
                           color: Color(0xFF625FFD),
-                          fontSize: 16,
+                          fontSize: 12,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
                       Text(
-                        'Mon 26 Apr',
+                        'Result',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w900,
@@ -61,11 +60,12 @@ class _ResultPageState extends State<ResultPage> {
                     child: CircularPercentIndicator(
                       radius: MediaQuery.of(context).size.width * 0.75,
                       lineWidth: 25.0,
-                      percent: 0.1,
+                      percent:
+                          (widget.distance > 100) ? 1 : widget.distance / 100,
                       center: Text(
-                        '[Insert Number Here] \nCalories Burned',
+                        '${widget.distance} Kilometers',
                         style: TextStyle(
-                          fontSize: MediaQuery.of(context).size.width * 0.0475,
+                          fontSize: MediaQuery.of(context).size.width * 0.06,
                           fontWeight: FontWeight.w900,
                         ),
                         textAlign: TextAlign.center,
@@ -85,7 +85,7 @@ class _ResultPageState extends State<ResultPage> {
                   children: [
                     Container(
                       height: MediaQuery.of(context).size.width * 0.4,
-                      width: MediaQuery.of(context).size.width * 0.4,
+                      width: MediaQuery.of(context).size.width * 0.75,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
@@ -114,57 +114,14 @@ class _ResultPageState extends State<ResultPage> {
                                 ),
                                 LinearPercentIndicator(
                                   lineHeight: 14.0,
-                                  percent: 0.5,
+                                  percent: (widget.estimatedTime > 100)
+                                      ? 1
+                                      : widget.estimatedTime / 100,
                                   backgroundColor: const Color(0xFFC4C4C4),
                                   progressColor: const Color(0xFF625FFD),
                                 )
                               ],
                             ),
-                          ],
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        color: const Color(0xFFEDEDED),
-                      ),
-                    ),
-                    Container(
-                      height: MediaQuery.of(context).size.width * 0.4,
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            const Center(
-                              child: Text(
-                                'Total Distance',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  '${widget.distance} kilometers',
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                LinearPercentIndicator(
-                                  lineHeight: 14.0,
-                                  percent: 0.5,
-                                  backgroundColor: const Color(0xFFC4C4C4),
-                                  progressColor: const Color(0xFF625FFD),
-                                )
-                              ],
-                            )
                           ],
                         ),
                       ),

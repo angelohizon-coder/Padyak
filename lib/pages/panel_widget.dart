@@ -145,40 +145,6 @@ class _PanelWidgetState extends State<PanelWidget> {
           const SizedBox(
             height: 32,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'images/map/flame.png',
-                color: const Color(0xFF625FFD),
-                height: 30,
-              ),
-              const SizedBox(
-                width: 25,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    '200 Calories',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    'Calories Burned',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
         ],
       ),
     );
