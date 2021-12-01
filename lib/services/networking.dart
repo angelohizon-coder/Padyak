@@ -6,6 +6,8 @@ class NetworkHelper {
 
   final String url;
 
+  // This should throw an error so it would be easier for it to get caught.
+
   Future getData() async {
     http.Response response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
@@ -17,6 +19,7 @@ class NetworkHelper {
       // Decodes the data into JSON.
       return jsonDecode(data);
     } else {
+      print(url);
       print(response.statusCode);
     }
   }

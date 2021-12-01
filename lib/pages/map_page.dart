@@ -79,8 +79,6 @@ class _MapPageState extends State<MapPage> {
   late Marker _curUserLoc;
   late Marker _destination;
 
-
-
   Directions? _info;
   int counter = 0;
   @override
@@ -95,7 +93,7 @@ class _MapPageState extends State<MapPage> {
     _addMarker();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
-        timerCount+=1;
+        timerCount += 1;
       });
     });
 
@@ -230,7 +228,7 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
-  void updateMapMarker(LatLng curLoc) async{
+  void updateMapMarker(LatLng curLoc) async {
     setState(() {
       _marker.removeWhere((m) => m.markerId.value == 'userLocation');
       _marker.add(Marker(
@@ -241,6 +239,7 @@ class _MapPageState extends State<MapPage> {
       ));
     });
   }
+
   void _addMarker() async {
     LatLng start = LatLng(originLatitude!, originLongitude!);
     LatLng end = LatLng(destinationLatitude!, destinationLongitude!);
@@ -282,14 +281,14 @@ class _MapPageState extends State<MapPage> {
 
     //Dynamically Update userMarker(current location of user on the map)
     locationSub =
-    location.onLocationChanged.distinct().listen((LocationData cLoc) {
+        location.onLocationChanged.distinct().listen((LocationData cLoc) {
       location.changeSettings(interval: 5000, distanceFilter: 1);
       lat = cLoc.latitude;
       long = cLoc.longitude;
       print('lat: $lat and long: $long');
       print('Number of times called: ${counter}');
       counter++;
-      currentLoc = LatLng(lat!,long!);
+      currentLoc = LatLng(lat!, long!);
       _controller.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
@@ -303,7 +302,8 @@ class _MapPageState extends State<MapPage> {
       reachedDestination(currentLoc, end);
     });
   }
-  void reachedDestination(LatLng currentLoc, LatLng destination){
+
+  void reachedDestination(LatLng currentLoc, LatLng destination) {
     double resultLat = 0;
     double resultLong = 0;
     double travelDuration = 0;
@@ -311,10 +311,11 @@ class _MapPageState extends State<MapPage> {
     resultLong = currentLoc.longitude - destination.longitude;
     print('ResultLat = $resultLat');
     print('ResultLong = $resultLong');
-    if((resultLat > -0.00006 && resultLat < 0.00006) && (resultLong > -0.00006 && resultLong < 0.00006)){
+    if ((resultLat > -0.00006 && resultLat < 0.00006) &&
+        (resultLong > -0.00006 && resultLong < 0.00006)) {
       _timer.cancel();
       locationSub.cancel();
-      travelDuration = timerCount/60;
+      travelDuration = timerCount / 60;
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -326,8 +327,7 @@ class _MapPageState extends State<MapPage> {
           },
         ),
       );
-    }
-    else{
+    } else {
       print('Destination not reached');
     }
   }

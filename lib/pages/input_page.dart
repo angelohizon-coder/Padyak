@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:padyak/pages/weather_loading_page.dart';
 import 'package:padyak/pages/map_loading_page.dart';
 import '../constants.dart';
+import 'package:padyak/exceptions.dart';
 
 class InputPage extends StatefulWidget {
   const InputPage({required this.currentLocation});
@@ -76,24 +77,15 @@ class _InputPageState extends State<InputPage> {
     return shouldPop;
   }
 
-  Future<void> _destinationDialog() async {
+  Future<void> _exceptionDialog(String title, String desc) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Input Missing'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: const <Widget>[
-                Text(
-                  'Please input a destination.',
-                  style: TextStyle(fontSize: 16.0),
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
+          title: Text(title),
+          content: Text(desc),
+          actions: [
             TextButton(
               child: const Text(
                 'Close',
@@ -107,6 +99,58 @@ class _InputPageState extends State<InputPage> {
         );
       },
     );
+  }
+
+  void setupLocationData() {
+    try {
+      print(origin);
+      print(destination);
+
+      // Changes the format of the string and destination input.
+      originQuery = origin.trim().replaceAll(RegExp(' +'), '%20');
+      destinationQuery = destination.trim().replaceAll(RegExp(' +'), '%20');
+
+      print(destinationQuery);
+
+      // Checks if there are inputs in the textfields.
+      if (originQuery == "" && destinationQuery == "")
+        throw NoInputException('');
+
+      // Checks if the destination is empty
+      if (destinationQuery == "") throw NoDestinationException('');
+
+      // Checks both the inputs are equal.
+      if (originQuery.toLowerCase() == destinationQuery.toLowerCase())
+        throw SameLocationException('');
+
+      // Move to Map Loading Screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return MapLoadingScreen(
+              originQuery: originQuery,
+              destinationQuery: destinationQuery,
+              currentLocation: widget.currentLocation,
+            );
+          },
+        ),
+      );
+    } on NoInputException {
+      _exceptionDialog('No Input', 'Please enter an input.');
+    } on NoDestinationException {
+      _exceptionDialog('Missing Input', 'Please input a destination!');
+    } on SameLocationException {
+      _exceptionDialog('Same Input', 'Please enter different locations.');
+    } catch (e) {
+      _exceptionDialog('Error', 'An error occured.');
+    } finally {
+      // Clears the input textfields
+      origin = "";
+      destination = "";
+      msgController1.clear();
+      msgController2.clear();
+    }
   }
 
   @override
@@ -258,38 +302,7 @@ class _InputPageState extends State<InputPage> {
                                 ),
                               ),
                             ),
-                            onPressed: () {
-                              // Changes the format of the string and destination input.
-                              originQuery =
-                                  origin.trim().replaceAll(RegExp(' +'), '%20');
-                              print(originQuery);
-                              destinationQuery = destination
-                                  .trim()
-                                  .replaceAll(RegExp(' +'), '%20');
-                              print(destinationQuery);
-
-                              // Checks if there exists a destination input.
-                              if (destinationQuery == "") {
-                                _destinationDialog();
-                              } else {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return MapLoadingScreen(
-                                        originQuery: originQuery,
-                                        destinationQuery: destinationQuery,
-                                        currentLocation: widget.currentLocation,
-                                      );
-                                    },
-                                  ),
-                                );
-                              }
-
-                              // Clears the inputs.
-                              msgController1.clear();
-                              msgController2.clear();
-                            },
+                            onPressed: setupLocationData,
                             child: AutoSizeText(
                               'Get The Route',
                               style: blueStyleIconButton,
